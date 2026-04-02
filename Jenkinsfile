@@ -29,7 +29,7 @@ pipeline {
                       '
                 '''
 
-                sh 'sleep 30'
+                sh 'sleep 45'
 
                 sh '''
                     sudo docker exec tortoisebot_test bash -lc '

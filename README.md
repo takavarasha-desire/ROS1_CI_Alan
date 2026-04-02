@@ -1,5 +1,37 @@
 # ROS1 CI - Jenkins
 
+## Prerequisite
+
+Docker must be installed before starting Jenkins.
+
+Required version:
+```bash
+containerd.io=1.7.23-1
+```
+If Docker is not installed, use the following steps:
+```bash
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+sudo systemctl enable --now docker
+
+sudo apt-get update
+sudo apt-get install -y --allow-downgrades containerd.io=1.7.23-1
+sudo apt-mark hold containerd.io
+
+sudo systemctl restart containerd
+sudo systemctl restart docker
+```
+
 ## Start Jenkins
 
 ### Open a terminal in the repository:
