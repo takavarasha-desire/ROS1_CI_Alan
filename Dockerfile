@@ -6,7 +6,7 @@ ENV QT_X11_NO_MITSHM=1
 
 SHELL ["/bin/bash", "-c"]
 
-# Basic tools + ROS/Gazebo packages commonly needed by tortoisebot
+# Basic tools + ROS/Gazebo packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     git \
@@ -37,7 +37,6 @@ WORKDIR /root/simulation_ws
 RUN mkdir -p /root/simulation_ws/src
 
 # Copy tortoisebot repo and extra test packages
-# IMPORTANT: these paths are relative to build context = ~/simulation_ws/src
 COPY tortoisebot /root/simulation_ws/src/tortoisebot
 COPY ros1_ci/tortoisebot_GTests/tortoisebot_msgs /root/simulation_ws/src/tortoisebot_msgs
 COPY ros1_ci/tortoisebot_GTests/tortoisebot_waypoints /root/simulation_ws/src/tortoisebot_waypoints
