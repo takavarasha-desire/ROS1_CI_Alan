@@ -4,13 +4,17 @@ pipeline {
     stages {
         stage('Build Docker image') {
             steps {
-                sh 'sudo docker build -f Dockerfile -t tortoisebot-unit_tests .'
+                sh '''
+                    cd ~/simulation_ws/src
+                    sudo docker build -f ros1_ci/Dockerfile -t tortoisebot-unit_tests .
+                '''
             }
         }
 
         stage('Run Gazebo + test') {
             steps {
                 sh 'xhost +local:root'
+                sh 'sudo docker rm -f tortoisebot_test || true'
 
                 sh '''
                     sudo docker run -d --name tortoisebot_test \
@@ -20,8 +24,7 @@ pipeline {
                       tortoisebot-unit_tests \
                       bash -lc '
                         source /opt/ros/noetic/setup.bash
-                        cd ~/simulation_ws
-                        catkin_make
+                        cd /root/simulation_ws
                         source devel/setup.bash
                         roslaunch tortoisebot_gazebo tortoisebot_playground.launch
                       '
@@ -32,13 +35,18 @@ pipeline {
                 sh '''
                     sudo docker exec tortoisebot_test bash -lc '
                         source /opt/ros/noetic/setup.bash
-                        cd ~/simulation_ws
+                        cd /root/simulation_ws
                         source devel/setup.bash
                         rostest tortoisebot_waypoints waypoints_test.test --reuse-master
                     '
                 '''
+            }
 
-                sh 'sudo docker stop tortoisebot_test'
+            post {
+                always {
+                    sh 'sudo docker stop tortoisebot_test || true'
+                    sh 'sudo docker rm -f tortoisebot_test || true'
+                }
             }
         }
 
